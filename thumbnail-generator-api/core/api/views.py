@@ -38,34 +38,30 @@ class ProfileViewSet(viewsets.ModelViewSet):
     
     def create(self, request, *args, **kwargs):
         profile_serializer = ProfileSerializer(data=request.data)
-        print("Veer the profile_serializer is:  ", profile_serializer)
+        
+        # check for valid input
         if profile_serializer.is_valid():
-            profile_serializer.save()    
+            profile_serializer.save()        
+        print("Veer the profile_serializer is ", profile_serializer)
         file = profile_serializer.data['photo']
-        print("Veer file is: ", file)
-        # print("veer the file._size is ", file._size)
-        try:
-            content_type = file.content_type
-            if content_type in ['image/png', 'image/jpg']:
-                if file._size > 5242880:
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
+        print("Veer request.FILES is : ", request.FILES)
+        print("Veer request.FILES.content_type is : ", request.FILES['photo'].content_type)
+        content_type = request.FILES['photo'].content_type
+        size = request.FILES['photo'].size
+        print("Veer the size is: ", size)
 
-                    # raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(self.max_upload_size), filesizeformat(file._size)))
-                else:
-                        
-                    thumbnailer = get_thumbnailer(profile_serializer.data['photo'])
-                    large =  thumbnailer['large'] 
-                    # medium = thumbnailer['medium']
-                    # small = thumbnailer['small']
-                    return HttpResponse(large, content_type="image/png")
+        # here we check for valid file type - jpg or png
+        if content_type in ['image/png', 'image/jpg', 'image/jpeg']:
+            
+            # here we check for file size greater than 5 mb !
+            if size > 5242880:
+                return Response("Please upload file less than 5MB !")
 
-            else:
-                return Response("Please upload jpg or png files only.")
-        except AttributeError:
-            pass
-
+            thumbnailer = get_thumbnailer(file)
+            large =  thumbnailer['large'] # 400 X 300
+            # medium = thumbnailer['medium'] # 160 X 120
+            # small = thumbnailer['small'] # 120 X 120
+            return HttpResponse(large, content_type="image/png")
         
-        
-        
-        
-        
+        else:
+            return Response("Please upload jpg or png files only.")
