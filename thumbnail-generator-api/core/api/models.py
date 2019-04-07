@@ -7,7 +7,6 @@ class File(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 class Profile(models.Model):
-    # user = models.OneToOneField('auth.User')
     photo = ThumbnailerImageField(upload_to='photos', blank=True)
     remark = models.CharField(max_length=20, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
