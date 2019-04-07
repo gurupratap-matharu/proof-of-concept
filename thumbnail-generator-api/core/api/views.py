@@ -1,9 +1,18 @@
 from django.shortcuts import render
-from django.contrib.auth.models import User, Group, Profile
-from rest_framework import viewsets
-from core.api.serializers import UserSerializer, GroupSerializer
+from django.contrib.auth.models import User, Group
+from django.core.files import File
+from django.http import HttpResponse
+
+from core.api.serializers import UserSerializer, GroupSerializer, FileSerializer, ProfileSerializer
 from easy_thumbnails.files import get_thumbnailer
 
+from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework import status
+
+from .models import Profile
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -24,12 +33,15 @@ class ProfileViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows thumbnails to be generated.
     """
-    thumbnailer = get_thumbnailer('animals/aardvark.jpg')
-    thumbnail_options = {'crop': True}
-    for size in (50, 100, 250):
-        thumbnail_options.update({'size': (size, size)})
-        thumbnailer.get_thumbnail(thumbnail_options)
-
-    # or to get a thumbnail by alias
-    thumbnailer['large']
-    #Thumbnailer.generate_thumbnail()
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    
+    def create(self, request, *args, **kwargs):
+        profile_serializer = ProfileSerializer(data=request.data)
+        if profile_serializer.is_valid():
+            profile_serializer.save()        
+        thumbnailer = get_thumbnailer(profile_serializer.data['photo'])
+        large =  thumbnailer['large'] 
+        # medium = thumbnailer['medium']
+        # small = thumbnailer['small']
+        return HttpResponse(large, content_type="image/png")
