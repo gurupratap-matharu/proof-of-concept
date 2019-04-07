@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
+from wsgiref.util import FileWrapper
 
 from .models import Profile
 
@@ -42,14 +43,11 @@ class ProfileViewSet(viewsets.ModelViewSet):
         # check for valid input
         if profile_serializer.is_valid():
             profile_serializer.save()        
-        print("Veer the profile_serializer is ", profile_serializer)
+        
         file = profile_serializer.data['photo']
-        print("Veer request.FILES is : ", request.FILES)
-        print("Veer request.FILES.content_type is : ", request.FILES['photo'].content_type)
         content_type = request.FILES['photo'].content_type
         size = request.FILES['photo'].size
-        print("Veer the size is: ", size)
-
+  
         # here we check for valid file type - jpg or png
         if content_type in ['image/png', 'image/jpg', 'image/jpeg']:
             
@@ -61,7 +59,12 @@ class ProfileViewSet(viewsets.ModelViewSet):
             large =  thumbnailer['large'] # 400 X 300
             # medium = thumbnailer['medium'] # 160 X 120
             # small = thumbnailer['small'] # 120 X 120
-            return HttpResponse(large, content_type="image/png")
+            filename = "thumbnail_" + request.FILES['photo'].name 
+            response = HttpResponse(large, content_type='image/png')
+            response['Content-Disposition'] = 'attachment; filename={}'.format(filename)   
+
+            return response            
+        
         
         else:
             return Response("Please upload jpg or png files only.")
