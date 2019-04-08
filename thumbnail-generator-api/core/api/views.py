@@ -42,9 +42,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
         
         # check for valid input
         if profile_serializer.is_valid():
-            profile_serializer.save()        
-        
-        file = profile_serializer.data['photo']
+            file = profile_serializer.save()        
+
         content_type = request.FILES['photo'].content_type
         size = request.FILES['photo'].size
   
@@ -55,7 +54,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
             if size > 5242880:
                 return Response("Please upload file less than 5MB !")
 
-            thumbnailer = get_thumbnailer(file)
+            thumbnailer = get_thumbnailer(file.photo)
             large =  thumbnailer['large'] # 400 X 300
             # medium = thumbnailer['medium'] # 160 X 120
             # small = thumbnailer['small'] # 120 X 120
