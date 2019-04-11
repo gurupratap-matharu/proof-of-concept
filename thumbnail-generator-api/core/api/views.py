@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, Group
 from django.core.files import File
 from django.http import HttpResponse
 
-from core.api.serializers import UserSerializer, GroupSerializer, FileSerializer, ProfileSerializer
+from core.api.serializers import UserSerializer, GroupSerializer, ProfileSerializer
 from easy_thumbnails.files import get_thumbnailer
 
 from rest_framework import viewsets

@@ -6,20 +6,15 @@ from .models import File, Profile
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'groups')
+        fields = '__all__'
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
-        fields = ('url', 'name')
-
-class FileSerializer(serializers.ModelSerializer):
-    class Meta():
-        model = File
-        fields = ('file', 'remark', 'timestamp')
+        fields = '__all__'
     
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta():
         model = Profile
-        fields = ('photo', 'remark', 'timestamp')
+        fields = '__all__'
