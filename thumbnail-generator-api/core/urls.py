@@ -13,6 +13,7 @@ router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 router.register(r'profile', views.ProfileViewSet)
+router.register(r'profile/photos', views.ProfileViewSet)
 
 # initialize schema for server side documentation
 schema_view = get_schema_view(title='Thumbnail API',
@@ -25,8 +26,4 @@ urlpatterns = [
     path('', include(router.urls)),
     path('schema/', schema_view),
     path('docs/', include_docs_urls(title='Thumbnail Generator API'))
-    # path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
-
-# if settings.DEBUG:
-#   urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
